@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
-
+// import { connectToMongoDB } from "@/lib/mongodb";
 import clsx from "clsx";
 
 import { Providers } from "./providers";
@@ -32,6 +32,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // MongoDB connection will be established when needed in API routes
+  // connectToMongoDB();
   return (
     <html suppressHydrationWarning lang="en">
       <head />

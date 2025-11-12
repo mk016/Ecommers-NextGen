@@ -24,6 +24,7 @@ import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
+import { useAuthStore } from "@/store/store";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -35,8 +36,24 @@ import {
   SearchIcon,
   Logo,
 } from "@/components/icons";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export const Navbar = () => {
+  const { isLoggedIn, userEmail, logout } = useAuthStore();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only showing auth state after client-side hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
+
   const searchInput = (
     <Input
       aria-label="Search"
@@ -89,32 +106,54 @@ export const Navbar = () => {
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
+        <ThemeSwitch />
+
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex ">
-          <div className="flex items-center gap-4">
-            <Dropdown placement="bottom-end">
-              <DropdownTrigger>
-                <Avatar
-                  isBordered
-                  as="button"
-                  className="transition-transform"
-                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                />
-              </DropdownTrigger>
-              <DropdownMenu aria-label="Profile Actions" variant="flat">
-                <DropdownItem key="profile" className="h-14 gap-2">
-                  <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">zoey@example.com</p>
-                </DropdownItem>
-                <DropdownItem key="settings">My Profile</DropdownItem>
+          {mounted && isLoggedIn ? (
+            <div className="flex items-center gap-4">
+              <Dropdown placement="bottom-end">
+                <DropdownTrigger>
+                  <Avatar
+                    isBordered
+                    as="button"
+                    className="transition-transform"
+                    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                  />
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Profile Actions" variant="flat">
+                  <DropdownItem key="profile" className="h-14 gap-2">
+                    <p className="font-semibold">Signed in as</p>
+                    <p className="font-semibold">{userEmail || "User"}</p>
+                  </DropdownItem>
 
-                <DropdownItem key="help_and_feedback">Cart</DropdownItem>
-                <DropdownItem key="logout" color="danger">
-                  Log Out
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
+                  <DropdownItem
+                    key="settings"
+                    onClick={() => router.push("/profile")}
+                  >
+                    My Profile
+                  </DropdownItem>
+
+                  <DropdownItem
+                    onPress={handleLogout}
+                    key="logout"
+                    color="danger"
+                  >
+                    Log Out
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Button as={Link} href="/login">
+                Login
+              </Button>
+              <Button as={Link} href="/signup">
+                Signup
+              </Button>
+            </div>
+          )}
         </NavbarItem>
       </NavbarContent>
 
