@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { connectMongoDB } from "@/lib/mongodb";
 import { User } from "@/models/User.model";
+import { generateToken } from "@/lib/jwt";
 
 //  Handle POST requests that log a user in.
 export async function POST(request: NextRequest) {
@@ -42,10 +43,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const token = generateToken({
+      id: existingUser._id,
+      email: existingUser.email,
+      username: existingUser.username,
+    });
+    console.log(token);
     //  Return a success response. You can add JWT/cookies here later.
     return NextResponse.json(
       {
         message: "Login successful!",
+        token,
         user: {
           id: existingUser._id,
           username: existingUser.username,

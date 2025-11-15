@@ -1,7 +1,19 @@
-export default function Profile() {
+"use client";
+import { useAuthStore } from "@/store/store";
+
+export default function Dashboard() {
+  const { userEmail, token } = useAuthStore();
+
+  if (!token)
+    return (
+      <>
+        <h1>login first</h1>
+      </>
+    );
   return (
-    <>
-      <h1>asdfasdf</h1>
-    </>
+    <div>
+      <h1>Welcome, {userEmail}</h1>
+      <p>Your token: {token}</p>
+    </div>
   );
 }

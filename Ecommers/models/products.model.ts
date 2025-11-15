@@ -43,8 +43,19 @@ const ProductsSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    subCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubCategory",
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-export const Products = mongoose.model("product", ProductsSchema);
+export const Products =
+  mongoose.models.product || mongoose.model("product", ProductsSchema);
